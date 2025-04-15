@@ -1,63 +1,88 @@
-const mongoose = require("mongoose");
-
-const cabBookSchema = new mongoose.Schema({
-    tripType: {
-        type: String,
-        enum: ["One Way Trip", "Round Trip", "Rental"],
-        required: true,
-    },
-    pickUpLocation: {
-        type: String,
-        required: true,
-    },
-    dropLocation: {
-        type: String,
-        required: true,
-    },
-    date: {
-        type: Date,
-        required: true,
-    },
-    time: {
-        type: String,
-        required: true,
-    },
-    returnDate: {
-        type: Date,
-        required: function () {
-            return this.tripType === "Round Trip"; 
-        },
-    },
-    returnTime: {
-        type: String,
-        required: function () {
-            return this.tripType === "Round Trip"; 
-        },
-    },
-    packageType: {
-        type: String,
-        required: function () {
-            return this.tripType === "Rental"; 
-        },
-    },
-    customerName: {
-        type: String,
-        required: true,
-    },
-    phoneNumber: {
-        type: String,
-        required: true,
-        match: [/^\d{10}$/, "Phone number must be 10 digits"],
-    },
-    email: {
-        type: String,
-        required: true,
-        match: [/.+\@.+\..+/, "Invalid email format"],
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
+const { Sequelize, DataTypes } = require('sequelize');
+const sequelize = new Sequelize('demo', 'root', 'root', {
+    host: '127.0.0.1',
+    dialect: 'mysql',
 });
 
-module.exports = mongoose.model("CabBook", cabBookSchema);
+const CabBooking = sequelize.define('CabBooking', {
+    user_trip_type: {
+        type: DataTypes.ENUM('One Way Trip', 'Round Trip', 'Rental'),
+        allowNull: false
+    },
+    user_pickup: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    user_drop: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    date: {
+        type: DataTypes.DATEONLY,
+        allowNull: false
+    },
+    time: {
+        type: DataTypes.TIME,
+        allowNull: false
+    },
+    return_date: {
+        type: DataTypes.DATEONLY,
+        allowNull: true
+    },
+    time_end: {
+        type: DataTypes.TIME,
+        allowNull: true
+    },
+    // package_type: {
+    //     type: DataTypes.STRING,
+    //     allowNull: false
+    // },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    phone: {
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        validate: {
+            is: /^[0-9]{10}$/
+        }
+    },
+    email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            isEmail: true
+        }
+    },
+    distance: {
+        type: DataTypes.FLOAT,
+        allowNull: false
+    },
+   baseAmount: {
+  type: DataTypes.JSON,
+  allowNull: true
+},
+    car: {
+        type: DataTypes.ENUM('hatchback', 'sedan', 'suv', 'suvplus'),
+        allowNull: true
+    },
+    price: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    bookingId: {
+        type: DataTypes.STRING,
+        allowNull: true
+      },
+    created_at: {
+        type: DataTypes.DATE,
+        defaultValue: Sequelize.NOW
+    }
+
+}, {
+    tableName: 'user_booking',
+    timestamps: false 
+});
+
+module.exports = CabBooking;
