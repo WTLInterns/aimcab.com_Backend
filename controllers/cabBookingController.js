@@ -54,6 +54,7 @@ const createBooking = async (req, res) => {
             email,
             carType,
             bookingId
+            
         } = req.body;
 
         // 🔍 Basic Validation
@@ -222,7 +223,6 @@ const createBooking = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal Server Error" });
     }
 };
-
 
 
 
